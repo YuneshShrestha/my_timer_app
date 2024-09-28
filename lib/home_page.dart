@@ -9,6 +9,8 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class HomeScreen extends StatefulWidget {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  HomeScreen({required this.flutterLocalNotificationsPlugin});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -23,8 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _timer;
   int _start = 60; // Example start time of 10 seconds
 
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+ 
 
   final scaffoldState = GlobalKey<ScaffoldState>();
 
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     Future.microtask(() async {
       await loadRiveFile();
-      _initializeNotification();
+    
       _loadTimerState();
     });
   }
@@ -60,16 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _initializeNotification() async {
-    tz.initializeTimeZones();
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
+  
 
   void _loadTimerState() async {
     final prefs = await SharedPreferences.getInstance();
@@ -91,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      await _flutterLocalNotificationsPlugin.zonedSchedule(
+      await widget.flutterLocalNotificationsPlugin.zonedSchedule(
         id,
         title,
         body,
@@ -123,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await _flutterLocalNotificationsPlugin.show(
+    await widget.flutterLocalNotificationsPlugin.show(
       0,
       'Timer Update',
       'Time left: $_start seconds',

@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:my_timer_app/home_page.dart';
+
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen(
+      {super.key, required this.flutterLocalNotificationsPlugin});
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -56,7 +60,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => HomeScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => HomeScreen(
+        flutterLocalNotificationsPlugin: widget.flutterLocalNotificationsPlugin,
+      ),
       transitionDuration: const Duration(seconds: 2),
       transitionsBuilder: (context, animation, _, child) {
         // opacity animation
@@ -64,28 +70,24 @@ class _SplashScreenState extends State<SplashScreen>
         var end = Offset.zero;
         var curve = Curves.ease;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         var offsetAnimation = animation.drive(tween);
         offsetAnimation = Tween<Offset>(
-        
           begin: const Offset(0.0, 1.0),
           end: Offset.zero,
         ).animate(
           CurvedAnimation(
-            
             parent: animation,
             curve: Curves.ease,
           ),
         );
         return ClipRect(
           child: SlideTransition(
-
             position: offsetAnimation,
             child: child,
           ),
         );
-
-
       },
     );
   }
